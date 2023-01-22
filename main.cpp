@@ -88,12 +88,7 @@ int main(){
 				circleSpeed.y *= -1.05f;
 				circleSpeed.x *= 1.05f;
 		}
-        if (circle.getPosition().y > currentWindowSize.y) {
-            gameRound(0);
-        }
-        if (circle.getPosition().y < 0) {
-            gameRound(1);
-        }
+
     	circle.move(circleSpeed.x, circleSpeed.y);
         window.clear();
         window.draw(rec);
