@@ -24,6 +24,8 @@ int recEnemyScore = 0;
 int colorIndex = 0;
 
 
+bool ballOut(sf::CircleShape, sf::RectangleShape, int);
+
 bool intersects(sf::CircleShape, sf::RectangleShape, int);
 
 void setCircleColor ();
@@ -60,7 +62,7 @@ int main(){
 			&& rec.getPosition().x >= 0) {
 			rec.move(-1.5f, 0.f);
 		}
-    	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) 
+    	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)
 			&&  rec.getPosition().x + rec.getSize().x < currentWindowSize.x ) {
             rec.move(1.5f, 0.f);
         }
@@ -74,21 +76,26 @@ int main(){
         }
         if (circle.getPosition().x + (circle.getRadius() * 2) >= currentWindowSize.x) {
           		circleSpeed.x *= -1.f;
-		} 
+		}
 		if (circle.getPosition().x <= 0){
 				circleSpeed.x *= -1.f;
-		} 
-		if (intersects(circle, rec, 0)){
-				setCircleColor();
-				circleSpeed.y *= -1.05f;
-				circleSpeed.x *= 1.05f;
-		} 
-		if (intersects(circle, recEnemy, 1)){
-				setCircleColor();
-				circleSpeed.y *= -1.05f;
-				circleSpeed.x *= 1.05f;
 		}
-
+		if (intersects(circle, rec, 0)){
+			setCircleColor();
+			circleSpeed.y *= -1.05f;
+			circleSpeed.x *= 1.05f;
+		}
+		if (ballOut(circle, rec, 0)){
+            gameRound(1);
+        }
+		if (intersects(circle, recEnemy, 1)){
+			setCircleColor();
+			circleSpeed.y *= -1.05f;
+			circleSpeed.x *= 1.05f;
+		}
+		if (ballOut(circle, recEnemy, 1)){
+			gameRound(0);
+		}
     	circle.move(circleSpeed.x, circleSpeed.y);
         window.clear();
         window.draw(rec);
@@ -120,27 +127,30 @@ void gameRound (int i) {
   	circleSpeed.x = 0.5f;
 }
 
+bool ballOut(sf::CircleShape circle, sf::RectangleShape rec, int i) {
+  if (circle.getPosition().y > rec.getPosition().y - rec.getSize().y && i) {
+    return true;
+  }
+  if (circle.getPosition().y < rec.getPosition().y + rec.getSize().y && !i) {
+	return true;
+  }
+  else {
+	return false;
+  }
+}
 
 bool intersects(sf::CircleShape circle, sf::RectangleShape rec , int i) {
-	if (circle.getPosition().y >= rec.getPosition().y - (rec.getSize().y * 2) 
-		&& circle.getPosition().x + (circle.getRadius() * 2) > rec.getPosition().x 
+	if (circle.getPosition().y >= rec.getPosition().y - (rec.getSize().y * 2)
+		&& circle.getPosition().x + (circle.getRadius() * 2) > rec.getPosition().x
 		&& circle.getPosition().x - circle.getRadius() < (rec.getPosition().x + rec.getSize().x)
 		&& i ){
 		return true;
 	}
-	else if (circle.getPosition().y <= rec.getPosition().y + (rec.getSize().y) 
-		&& circle.getPosition().x + (circle.getRadius() * 2) > rec.getPosition().x 
+	else if (circle.getPosition().y <= rec.getPosition().y + (rec.getSize().y)
+		&& circle.getPosition().x + (circle.getRadius() * 2) > rec.getPosition().x
 		&& circle.getPosition().x - circle.getRadius() < (rec.getPosition().x + rec.getSize().x)
 		&& !i ){
 		return true;
-	}
-	else if (circle.getPosition().y > rec.getPosition().y - rec.getSize().y * 2 && i){
-		gameRound(0);
-		return false;
-	}
-	else if (circle.getPosition().y < rec.getPosition().y + rec.getSize().y && !i){
-		gameRound(1);
-		return false;
 	}
 	else {
 		return false;
